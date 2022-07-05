@@ -1,0 +1,22 @@
+.main-table {
+    max-width: 1000px;
+    position: center;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-modal {
+    max-width: 100px;
+}
+
+.delete-bucket {
+    color: white;
+}
+
+.delete-btn {
+    background-color: red;
+}
+
+.delete-btn:hover {
+    background-color: darkred;
+}
