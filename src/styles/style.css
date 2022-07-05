@@ -20,3 +20,8 @@
 .delete-btn:hover {
     background-color: darkred;
 }
+
+.add-by-inn {
+    margin-top: 10px;
+    max-width: 100px;
+}

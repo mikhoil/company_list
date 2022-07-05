@@ -47,7 +47,10 @@ export default function CompaniesLayout() {
                         <input id={'ogrn'} {...register('ogrn')}/>
                         <label htmlFor={'inn'}>ИНН</label>
                         <input id={'inn'} {...register('inn')}/>
-                        <Button onClick={async () => {
+                        <Button
+                            className={'add-by-inn'}
+                            type={'primary'}
+                            onClick={async () => {
                             const query = document.querySelector('#inn').value;
                             const token = '76f2d19f27ce3671a38eed5aacdcdd26ca0c012f';
                             const companies = await fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', {
@@ -59,7 +62,6 @@ export default function CompaniesLayout() {
                                 },
                                 body: JSON.stringify({query})
                             }).then(response => response.json());
-                            console.log('Компании', companies);
                             setState([...state, ...companies.suggestions?.map(({data, value}) => {
                                 const regDate = data.state['registration_date'], {address, ogrn, inn} = data;
                                 return {
