@@ -4,18 +4,18 @@ import 'antd/dist/antd.css';
 import {DeleteOutlined} from "@ant-design/icons";
 import {Button, Modal} from "antd";
 import InlineEditableText from "./inlineEditableText";
-import '../styles/style.css'
+import '../styles/style.css';
 
 function generateId() {
     let res = '';
-    for (let i = 0; i < 1 + Math.trunc(Math.random() * 5); i++)
+    for (let i = 0; i < 1 + Math.trunc(Math.random() * 6); i++)
         res += 1 + Math.trunc(Math.random() * 9);
     return +res;
 }
 
-function parseDate(time) {
-    const month = time.getMonth()+1, date = time.getDate();
-    return `${time.getFullYear()}-${month < 10 ? '0' + month: month}-${date < 10 ? '0' + date: date}`;
+function getFullDate(time) {
+    const month = time.getMonth() + 1, date = time.getDate();
+    return `${time.getFullYear()}-${month < 10 ? '0' + month : month}-${date < 10 ? '0' + date : date}`;
 }
 
 export default function CompaniesLayout() {
@@ -33,12 +33,7 @@ export default function CompaniesLayout() {
                    onOk={() => setIsModalVisible(false)}
                    onCancel={() => setIsModalVisible(false)}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <fieldset style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-evenly',
-                        marginBottom: 10
-                    }}>
+                    <fieldset className={'form-fieldset'}>
                         <label htmlFor={'title'}>Наименование</label>
                         <input id={'title'} {...register('title')}/>
                         <label htmlFor={'address'}>Адрес</label>
@@ -51,29 +46,33 @@ export default function CompaniesLayout() {
                             className={'add-by-inn'}
                             type={'primary'}
                             onClick={async () => {
-                            const query = document.querySelector('#inn').value;
-                            const token = '76f2d19f27ce3671a38eed5aacdcdd26ca0c012f';
-                            const companies = await fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', {
-                                method: 'POST',
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Accept": "application/json",
-                                    "Authorization": "Token " + token
-                                },
-                                body: JSON.stringify({query})
-                            }).then(response => response.json());
-                            setState([...state, ...companies.suggestions?.map(({data, value}) => {
-                                const regDate = data.state['registration_date'], {address, ogrn, inn} = data;
-                                return {
-                                    title: value,
-                                    address: address.value,
-                                    ogrn, inn,
-                                    date: regDate ? parseDate(new Date(regDate)) : <span>&mdash;</span>,
-                                    id: generateId()
-                                }
-                            })]);
-                            setIsModalVisible(false);
-                        }}>Загрузить</Button>
+                                const query = document.querySelector('#inn').value;
+                                const token = '76f2d19f27ce3671a38eed5aacdcdd26ca0c012f';
+                                const companies = await fetch('https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', {
+                                    method: 'POST',
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "Accept": "application/json",
+                                        "Authorization": "Token " + token
+                                    },
+                                    body: JSON.stringify({query})
+                                }).then(response => response.json());
+                                if (!companies.suggestions.length) Modal.error({
+                                    title: 'Ошибочка вышла!',
+                                    content: `По данному ИНН не было найдено ни одной компании :(`
+                                });
+                                setState([...state, ...companies.suggestions?.map(({data, value}) => {
+                                    const regDate = data.state['registration_date'], {address, ogrn, inn} = data;
+                                    return {
+                                        title: value,
+                                        address: address.value,
+                                        ogrn, inn,
+                                        date: regDate ? getFullDate(new Date(regDate)) : <span>&mdash;</span>,
+                                        id: generateId()
+                                    }
+                                })]);
+                                setIsModalVisible(false);
+                            }}>Загрузить</Button>
                         <label htmlFor={'date'}>Дата регистрации</label>
                         <input type={'date'} id={'date'} {...register('date')}/>
                     </fieldset>

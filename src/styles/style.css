@@ -5,6 +5,13 @@
     text-align: center;
 }
 
+.form-fieldset {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+}
+
 .btn-modal {
     max-width: 100px;
 }
